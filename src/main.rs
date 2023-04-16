@@ -1,28 +1,59 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use iced::widget::{checkbox, column, container};
+use iced::{Element, Font, Length, Sandbox, Settings};
 
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
+use app::{CarnoWS, CarnoWSMessage, Client};
+mod app;
+
+const ICON_FONT: Font = Font::External {
+    name: "Icons",
+    bytes: include_bytes!("../fonts/icons.ttf"),
+};
+
+pub fn main() -> iced::Result {
+    CarnoWS::run(Settings::default())
 }
 
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
+impl Sandbox for CarnoWS {
+    type Message = CarnoWSMessage;
 
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
-}
+    fn new() -> CarnoWS {
+        let local_client = Client {
+            client: String::from("127.0.0.1"),
+            checked: false,
+        };
+        CarnoWS {
+            clients: vec![local_client],
+        }
+    }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .service(hello)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
-    })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
+    fn title(&self) -> String {
+        String::from("A websocket debug tool")
+    }
+
+    fn update(&mut self, _message: Self::Message) {
+        // This application has no interactions
+    }
+
+    fn view(&self) -> Element<Self::Message> {
+        // "Hello, world!".into()
+
+        let client_checkbox = checkbox(
+            self.clients[0].client.to_string(),
+            self.clients[0].checked,
+            CarnoWSMessage::ClientChecked,
+        );
+        // let cbx = vec![client_checkbox];
+
+        // column(children)
+        let content = column![client_checkbox]; //.spacing(22);
+                                                // content.
+
+        container(content)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            // .center_x()
+            .padding(10)
+            // .center_y()
+            .into()
+    }
 }
