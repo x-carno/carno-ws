@@ -1,3 +1,4 @@
+#[derive(Default)]
 pub struct CarnoWS {
     pub clients: Vec<Client>,
 }
