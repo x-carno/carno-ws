@@ -6,3 +6,4 @@ artifacts/
 .vscode/
 .dotnet/
 *.binlog
+.DS_Store
