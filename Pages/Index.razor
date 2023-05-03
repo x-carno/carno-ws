@@ -1,0 +1,111 @@
+﻿@page "/"
+
+@using carno_ws.Data
+
+@inject IDialogService DialogService
+
+<MudPaper Class="d-flex flex-row flex-grow-1 gap-2 mt-4 pl-4 pr-4" Elevation="0" Height="90%">
+    <MudPaper Class="p-2 border-solid border-2 mud-border-primary" Width="20%">
+        <WSClientList></WSClientList>
+        @* @if (clients == null)
+        {
+        <p><em>Loading...</em></p>
+        }
+        else
+        {
+        @foreach (var c in clients)
+        {
+        <MudCheckBox @bind-Checked="@c.Checked" Color="Color.Primary">@c.Addr</MudCheckBox>
+        }
+        } *@
+    </MudPaper>
+    <MudPaper Class="d-flex flex-column flex-grow-1 gap-2 p-2" Width="30%">
+        <MudTextField @bind-Text="sampleText" T="string" Label="Message" Variant="Variant.Text" Lines="20"
+            Placeholder="messages to send" />
+        <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary"
+            OnClick="OnSendClick">Send</MudButton>
+    </MudPaper>
+    <MudPaper Class="d-flex flex-column flex-grow-1 gap-1 " Width="50%">
+        <MudInput T="string" Placeholder="filter messages" Class="m-2" style="width: 95%;" />
+        <MudPaper Height="50%">
+            <MudList style="overflow:hidden;overflow-y:scroll;height: 100%;" Clickable="true" Dense="true"
+                @bind-SelectedItem="selectedMessageItem" @bind-SelectedValue="selectedMessageValue">
+                <MudListItem class="truncate" Text="Send Sample" Value="-2" Icon="@Icons.Material.Filled.CallMade" />
+                <MudListItem Text="Inbox Sample" Value="-1" Icon="@Icons.Material.Filled.CallReceived" />
+                @for (int i = 0; i < WSClientService.communicationMessages.Count; i++)
+                {
+                    var m = WSClientService.communicationMessages[i];
+                    <MudDivider />
+                    @if (m.IsSendOrReceive)
+                    {
+                        <MudListItem class="truncate" Text="@m.message" Value="@i" Icon="@Icons.Material.Filled.CallMade" />
+                    }
+                    else
+                    {
+                        <MudListItem class="truncate" Text="@m.message" Value="@i" Icon="@Icons.Material.Filled.CallReceived" />
+                    }
+                }
+            </MudList>
+        </MudPaper>
+        <MudPaper Height="50%">
+            <SurveyPrompt />
+            @selectedMessageItem?.Text
+        </MudPaper>
+    </MudPaper>
+</MudPaper>
+
+
+@code {
+
+    MudListItem? selectedMessageItem;
+    object selectedMessageValue = 1;
+
+    string sampleText = "";
+
+    private void OnSendClick()
+    {
+        if (sampleText == "")
+        {
+            var options = new DialogOptions { CloseOnEscapeKey = true };
+            DialogService.Show<SendMessageDialog>("No Message To Send", options);
+            Console.WriteLine("no message to send");
+            return;
+        }
+        Console.WriteLine(sampleText);
+        Console.WriteLine(WSClientService.clientList!.Count());
+
+        var result = from c in WSClientService.clientList
+                     where c.Checked == true
+                     select c;
+
+        if (result.Count() == 0)
+        {
+            var options = new DialogOptions { CloseOnEscapeKey = true };
+            DialogService.Show<SendMessageDialog>("No Client To Send", options);
+            Console.WriteLine("no client to send");
+            return;
+        }
+
+        WSClientService.GetInstance().SendMessage(sampleText);
+
+        var msg = new WSMessage();
+        msg.IsSendOrReceive = true;
+        msg.message = sampleText;
+
+        WSClientService.communicationMessages.Add(msg);
+    }
+
+    protected override void OnInitialized()
+    {
+        WSClientService.GetInstance().OnWSClientChange += WSClientChanged;
+    }
+
+    private async void WSClientChanged(object sender)
+    {
+        await InvokeAsync(() =>
+        {
+            @* Console.WriteLine("client list changed in index page"); *@
+            base.StateHasChanged();
+        });
+    }
+}

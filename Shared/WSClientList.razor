@@ -1,0 +1,46 @@
+@using carno_ws.Data
+@* @inject WSClientService ClientServiceInListPage *@
+
+
+<MudList>
+    <MudListSubheader>
+        Clients Count: @WSClientService.clientList.Count
+    </MudListSubheader>
+
+    @foreach (var c in WSClientService.clientList)
+    {
+        <MudCheckBox @bind-Checked="@c.Checked" Color="Color.Primary" UnCheckedColor="Color.Default">
+            @c.Addr
+        </MudCheckBox>
+    }
+
+</MudList>
+
+
+@code {
+    [Parameter]
+    public EventCallback<WSClient> OnClientChecked { get; set; }
+
+    @* public List<WSClient> clients = new List<WSClient>(); *@
+
+    protected override void OnInitialized()
+    {
+        WSClientService.GetInstance().OnWSClientChange += WSClientChanged;
+    }
+
+    private async void WSClientChanged(object sender)
+    {
+
+        await InvokeAsync(() =>
+        {
+            @* Console.WriteLine("client list changed in list page"); *@
+            base.StateHasChanged();
+        });
+    }
+
+    protected override void OnParametersSet()
+    {
+        @* Console.WriteLine("set parameter"); *@
+    }
+}
+

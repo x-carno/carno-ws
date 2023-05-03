@@ -1,0 +1,11 @@
+﻿html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
