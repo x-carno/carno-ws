@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import Clients from "./Clients.vue"
 import { invoke } from "@tauri-apps/api/tauri";
 
 const msgSend = ref("");

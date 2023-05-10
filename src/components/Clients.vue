@@ -2,29 +2,29 @@
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 
-const greetMsg = ref("");
+const clients = ref("");
 // const name = ref("");
 
 async function client_list() {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    greetMsg.value = await invoke("client_list");
+    clients.value = await invoke("client_list");
 }
 
 client_list();
 </script>
 
 <template>
-    <p>{{ greetMsg }}</p>
-    <p>{{ greetMsg.length }}</p>
+    <p>{{ clients }}</p>
+    <p>{{ clients.length }}</p>
 
-    <li v-for="item in greetMsg">
-        {{ item }}
+    <li v-for="item in clients">
+        {{ item.addr }}:{{ item.checked }}
     </li>
 
-    <a-list size="small" bordered :data-source="greetMsg">
+    <a-list size="small" bordered :data-source="clients">
         <template #renderItem="{ item }">
             <a-list-item>
-                <a-checkbox>{{ item }}</a-checkbox>
+                <a-checkbox v-model:checked="item.checked">{{ item.addr }}</a-checkbox>
             </a-list-item>
         </template>
     </a-list>

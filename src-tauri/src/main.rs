@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use serde;
+
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -14,14 +16,35 @@ fn main() {
         .expect("error while running tauri application");
 }
 
+#[derive(serde::Serialize)]
+struct Client {
+    addr: String,
+    checked: bool,
+}
+
+// impl serde::Serialize for Client {
+//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//     where
+//         S: serde::ser::Serializer,
+//     {
+//         serializer.serialize_str(self.to_string().as_ref())
+//     }
+// }
+
 #[tauri::command]
-fn client_list() -> Vec<String> {
+fn client_list() -> Vec<Client> {
     let mut cl = Vec::new();
-    cl.push(String::from("localhost1"));
-    cl.push(String::from("localhost2"));
-    cl.push(String::from("localhost3"));
-    cl.push(String::from("localhost4"));
-    cl.push(String::from("localhost5"));
+    cl.push(Client {
+        addr: String::from("localhost1"),
+        checked: false,
+    });
+    cl.push(Client {
+        addr: String::from("localhost2"),
+        checked: true,
+    });
+    // cl.push(String::from("localhost3"));
+    // cl.push(String::from("localhost4"));
+    // cl.push(String::from("localhost5"));
     cl
 
     // vec![String::from("localhost")]
