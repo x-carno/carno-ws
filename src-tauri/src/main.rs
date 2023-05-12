@@ -22,15 +22,6 @@ struct Client {
     checked: bool,
 }
 
-// impl serde::Serialize for Client {
-//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-//     where
-//         S: serde::ser::Serializer,
-//     {
-//         serializer.serialize_str(self.to_string().as_ref())
-//     }
-// }
-
 #[tauri::command]
 fn client_list() -> Vec<Client> {
     let mut cl = Vec::new();
