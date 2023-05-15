@@ -3,8 +3,6 @@ import { ref, computed } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 
 const clients = ref("");
-// const name = ref("");
-
 async function client_list() {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
     clients.value = await invoke("client_list");
