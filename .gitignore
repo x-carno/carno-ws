@@ -7,3 +7,5 @@ artifacts/
 .dotnet/
 *.binlog
 .DS_Store
+
+src-tauri/target/
