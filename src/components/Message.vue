@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
-import { clients } from "./Clients.vue"
-import { invoke } from "@tauri-apps/api/tauri";
+// import { clients } from "./Clients.vue"
+// import { invoke } from "@tauri-apps/api/tauri";
 
 const msgSend = ref("");
 // const name = ref("");
